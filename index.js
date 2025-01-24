@@ -65,16 +65,27 @@ const prepareMessage = (pinoData, verbose, parseMode) => {
  * @returns {Promise}
  */
 export default function ({ chatId, botToken, verbose = false, extra = {} }) {
-  return build(async (source) => {
-    for await (const obj of source) {
-      const { parse_mode } = extra;
-      const message = prepareMessage(obj, verbose, parse_mode);
+  const pendingPromises = new Set();
 
-      try {
-        await sendMsgToTg(chatId, botToken, message, extra);
-      } catch (error) {
-        console.error(error);
+  return build(
+    async (source) => {
+      for await (const obj of source) {
+        const { parse_mode } = extra;
+        const message = prepareMessage(obj, verbose, parse_mode);
+
+        const promise = sendMsgToTg(chatId, botToken, message, extra)
+          .catch((reason) => console.error(reason))
+          .finally(() => {
+            pendingPromises.delete(promise);
+          });
+        pendingPromises.add(promise);
       }
-    }
-  });
+    },
+    {
+      async close(err, cb) {
+        await Promise.allSettled([...pendingPromises]);
+        cb(err, 'close');
+      },
+    },
+  );
 }
