@@ -1,9 +1,10 @@
-import build from "pino-abstract-transport";
+/* eslint-disable camelcase */
+import build from 'pino-abstract-transport';
 
-const API_URL = "https://api.telegram.org/bot";
+const API_URL = 'https://api.telegram.org/bot';
 
 export async function sendMsgToTg(chatId, botToken, message, extra = {}) {
-  const method = "sendMessage";
+  const method = 'sendMessage';
   const url = `${API_URL}${botToken}/${method}`;
   const body = JSON.stringify({
     chat_id: chatId,
@@ -12,9 +13,9 @@ export async function sendMsgToTg(chatId, botToken, message, extra = {}) {
   });
 
   const response = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body,
   });
@@ -64,7 +65,7 @@ const prepareMessage = (pinoData, verbose, parseMode) => {
  * @returns {Promise}
  */
 export default function ({ chatId, botToken, verbose = false, extra = {} }) {
-  return build(async function (source) {
+  return build(async (source) => {
     for await (const obj of source) {
       const { parse_mode } = extra;
       const message = prepareMessage(obj, verbose, parse_mode);
