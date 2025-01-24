@@ -22,7 +22,10 @@
   "dependencies": {
     "pino-abstract-transport": "^1.2.0"
   },
-  "repository": "https://github.com/Jhon-Mosk/pino-telegram-webhook",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jhon-Mosk/pino-telegram-webhook.git"
+  },
   "bugs": {
     "url": "https://github.com/Jhon-Mosk/pino-telegram-webhook/issues"
   },
