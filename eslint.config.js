@@ -1,10 +1,12 @@
-'use strict';
+import config from 'eslint-config-metarhia';
 
-const config = require('eslint-config-metarhia');
-
-module.exports = [
+export default [
   ...config,
   {
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
     rules: {
       'no-unused-vars': 'warn',
       'max-len': [
