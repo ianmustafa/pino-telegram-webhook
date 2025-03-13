@@ -1,7 +1,8 @@
 node_modules
 .fuse*
-test
+test/
 .nvmrc
 eslint.config.js
 .editorconfig
 prettier.config.js
+temp/
