@@ -39,20 +39,16 @@ const verboseSerializer = {
   markdownv2: (string) => `\`\`\`json\n${string}\n\`\`\``,
 };
 
-const prepareMessage = (pinoData, verbose, parseMode) => {
-  if (verbose) {
-    const msg = JSON.stringify(pinoData, null, 2);
+const prepareMessage = ({ pinoData, verbose, parseMode, messageKey }) => {
+  if (!verbose) return pinoData[messageKey];
 
-    if (parseMode) {
-      const parseModeLC = parseMode.toLowerCase();
-      const serializer = verboseSerializer[parseModeLC];
-      return serializer(msg);
-    }
+  const msg = JSON.stringify(pinoData, null, 2);
 
-    return msg;
-  }
+  if (!parseMode) return msg;
 
-  return pinoData.msg;
+  const parseModeLC = parseMode.toLowerCase();
+  const serializer = verboseSerializer[parseModeLC];
+  return serializer(msg);
 };
 
 /**
@@ -60,18 +56,30 @@ const prepareMessage = (pinoData, verbose, parseMode) => {
  * @param {object} params - parameters for creating a transport
  * @param {number} params.chatId - chat ID
  * @param {string} params.botToken - bot token
- * @param {boolean} params.verbose - send debugging information
- * @param {object} params.extra - additional parameters for sending a message https://core.telegram.org/bots/api#sendmessage
+ * @param {boolean} [params.verbose] - send debugging information
+ * @param {string} [params.messageKey] - key for message. Default is 'msg'
+ * @param {object} [params.extra] - additional parameters for sending a message https://core.telegram.org/bots/api#sendmessage
  * @returns {Promise}
  */
-export default function ({ chatId, botToken, verbose = false, extra = {} }) {
+export default function ({
+  chatId,
+  botToken,
+  verbose = false,
+  messageKey = 'msg',
+  extra = {},
+}) {
   const pendingPromises = new Set();
 
   return build(
     async (source) => {
-      for await (const obj of source) {
+      for await (const pinoData of source) {
         const { parse_mode } = extra;
-        const message = prepareMessage(obj, verbose, parse_mode);
+        const message = prepareMessage({
+          pinoData,
+          verbose,
+          parse_mode,
+          messageKey,
+        });
 
         const promise = sendMsgToTg(chatId, botToken, message, extra)
           .catch((reason) => console.error(reason))

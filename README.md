@@ -30,6 +30,14 @@ const logger = pino({
 logger.error('<b>test log!</b>');
 ```
 
+## Options descriptions
+
+- `chatId`: The chat ID of the Telegram channel or group. Required.
+- `botToken`: The bot token of the Telegram bot. Required.
+- `verbose`: Whether to display the log in verbose mode.
+- `messageKey`: The key of the log message. Default is `msg`. Required if the logger's [message key](https://github.com/pinojs/pino/blob/HEAD/docs/api.md#messagekey-string) has been changed.
+- `extra` : The extra parameter is optional. Parameters that the method [sendMessage](https://core.telegram.org/bots/api#sendmessage) supports can be passed to it
+
 The extra parameter is optional. Parameters that the method [sendMessage](https://core.telegram.org/bots/api#sendmessage) supports can be passed to it
 
 ---
